@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public Rigidbody myRigid;
     public bool isJump = false;
@@ -17,7 +17,7 @@ public class NewBehaviourScript : MonoBehaviour
 
         //Debug.Log(jump);
 
-        Vector3 move = new Vector3(xSpeed, myRigid.velocity.y, zSpeed);
+        Vector3 move = new Vector3(xSpeed * 10f, myRigid.velocity.y, zSpeed * 10f);
         myRigid.velocity = move;
 
         transform.forward = Vector3.Lerp(transform.forward, move, Time.deltaTime);
