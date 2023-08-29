@@ -5,6 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody myRigid;
+
+    private float speed = 1000f;
+    private float jumpForce = 1000f;
+
     public bool isJump = false;
 
     // Update is called once per frame
@@ -12,35 +16,26 @@ public class PlayerController : MonoBehaviour
     {
         float zSpeed = Input.GetAxis("Vertical");
         float xSpeed = Input.GetAxis("Horizontal");
-        float jump = Input.GetAxis("Jump");
         float xMouse = Input.GetAxis("Mouse X");
+        float jump = Input.GetAxis("Jump");
 
-        //Debug.Log(jump);
+        if(zSpeed != 0 || xSpeed != 0)
+        {
+            Vector3 move = new Vector3(xSpeed * speed * Time.deltaTime, myRigid.velocity.y, zSpeed * speed * Time.deltaTime);
+            myRigid.velocity = move;
 
-        Vector3 move = new Vector3(xSpeed * 10f, myRigid.velocity.y, zSpeed * 10f);
-        myRigid.velocity = move;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(move), 10f * Time.deltaTime);
+        }
 
-        transform.forward = Vector3.Lerp(transform.forward, move, Time.deltaTime);
-        //transform.rotation = Quaternion.Lerp()
-        //transform.rotation = Quaternion.LookRotation(new Vector3(xMouse, 0f, 0f));
-
-
-
-        //if (zSpeed != 0)
-        //{
-        //    myRigid.velocity = new Vector3(myRigid.velocity.x, myRigid.velocity.y, zSpeed * 10f);
-        //}
-
-        //if (xSpeed != 0)
-        //{
-        //    myRigid.velocity = new Vector3(xSpeed * 10f, myRigid.velocity.y, myRigid.velocity.z);
-        //}
+        //Debug.Log("ÄõÅÍ´Ï¾ð °ª : " + Quaternion.Slerp(transform.rotation, transform.rotation, speed));
 
         if (jump != 0 && isJump == false)
         {
-            myRigid.AddForce(new Vector3(myRigid.velocity.x, 10f, myRigid.velocity.z), ForceMode.Impulse);
+            myRigid.AddForce(Vector3.up * jumpForce * Time.deltaTime, ForceMode.Impulse);
             isJump = true;
         }
+
+        Debug.Log(Time.deltaTime);
     }
 
 
