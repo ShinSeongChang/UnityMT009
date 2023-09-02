@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -21,12 +21,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             Destroy(gameObject);
         }
     }
+
     // Start is called before the first frame update
     void Start()
     {
         // 플레이어 랜덤 위치생성할 좌표
         Vector3 randomSpawnPos = new Vector3(74f, 25f, 41f);
-        Debug.Log(randomSpawnPos);
+        //Debug.Log(randomSpawnPos);
 
         // y값은 0으로 해준다.
         //randomSpawnPos.y = 0f;

@@ -6,17 +6,18 @@ using Photon.Pun;
 
 public class PlayerController : MonoBehaviourPun
 {
-    public Rigidbody myRigid;
-    public Animator myAni = default;
+    private Rigidbody myRigid;
+    private Animator myAni = default;
 
-    private float speed = 1000f;
-    private float jumpForce = 1000f;
+    private float speed = 500f;
+    private float jumpForce = 500f;
 
     public bool isJump = false;
 
     void Start()
     {
-        //myAni = GetComponent<Animator>();
+        myRigid = transform.GetComponent<Rigidbody>();
+        myAni = transform.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -29,38 +30,32 @@ public class PlayerController : MonoBehaviourPun
             return;
         }
 
-        Vector3 vector = new Vector3(0f, myRigid.rotation.y, 0f);
-
-        //transform.rotation = Quaternion.Euler(vector);
-        //float Z = Input.GetAxis("Vertical");
-
         float zSpeed = Input.GetAxis("Vertical");
         float xSpeed = Input.GetAxis("Horizontal");        
         float jump = Input.GetAxis("Jump");
-        //myAni.SetFloat("Move", 0f);
-
-        //Debug.Log("노말 : " + Z);
-        //Debug.Log("겟액시스 로우 ㅡㅡㅡㅡ : " + zSpeed);
 
         if(zSpeed != 0 || xSpeed != 0)
         {
             // 이동키입력값의 절대값들을 더한채로 애니메이터에 보내기
             myAni.SetFloat("Move", Mathf.Abs(zSpeed) + Mathf.Abs(xSpeed));
-
              
+            // 캐릭터 움직일 이동좌표
             Vector3 move = new Vector3(xSpeed * speed * Time.deltaTime, 0f, zSpeed * speed * Time.deltaTime);
+
+            // ============개중요 !!! 월드 좌표값을 로컬좌표 값으로, 즉 캐릭터 기준으로 정면을 잡는다.=============
+            // 이 부분이 없으면 캐릭터는 정면키 입력시 항상 월드 기준 z방향으로 나아가려 함.
+
+            move = transform.TransformDirection(move);
+
+            // ==========================================================================================
+
+            // 캐릭터 이동
             myRigid.velocity = move + (Vector3.up * myRigid.velocity.y);
 
-            // 절대값 구하기
-            //Debug.Log("GetAxis 값 : " + Mathf.Abs(zSpeed));
-
-            // 벡터의 반환값??
-            //Debug.Log(move.magnitude);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(move), 5f * Time.deltaTime);
+            // 캐릭터 회전
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(move), 3f * Time.deltaTime);
         }
 
-        //Debug.Log("쿼터니언 값 : " + Quaternion.Slerp(transform.rotation, transform.rotation, speed));
 
         if (jump != 0 && isJump == false)
         {
@@ -69,17 +64,15 @@ public class PlayerController : MonoBehaviourPun
             isJump = true;
         }
 
-        myAni.SetFloat("Jump", Mathf.Abs(myRigid.velocity.y));
-        //Debug.Log("점프 벨로시티 : " + Mathf.Abs(myRigid.velocity.y));
+        myAni.SetFloat("Jump", Mathf.Abs(myRigid.velocity.y)); 
+
     }
 
 
 
     private void OnCollisionEnter(Collision collision)
     {
-        ContactPoint contactPoint = collision.contacts[0];
-        //Debug.Log("충돌한 부분 : " + collision.contacts[0].point);
-        Debug.Log("충돌 ?? : " + contactPoint.point.normalized);             
+        ContactPoint contactPoint = collision.contacts[0];         
 
         if(collision.collider.tag == "Ground")
         {
